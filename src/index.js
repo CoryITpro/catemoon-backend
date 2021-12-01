@@ -1,18 +1,22 @@
-// Setting up configs
-require("dotenv").config();
-
 // Server util modules
 const cors = require("cors");
 const express = require("express");
 
 // Custom logger
 const logger = require("./utils/logger");
+// Setting up configs
+const configs = require("./configs");
+// Middlewares
+const JwtMiddleware = require("./middlewares/jwtMiddleware");
+const ExpressMiddleware = require("./middlewares/expressMiddleware");
+const DBMiddleware = require("./middlewares/dbMiddleware");
+const ApiMiddleware = require("./middlewares/apiMiddleware");
 
 // Express Application
 const app = express();
 
 // Development dependancies
-const morgan = process.env.MODE === "development" ? require("morgan") : null;
+const morgan = configs.mode === "development" ? require("morgan") : null;
 
 // Middlewares
 app.use(cors());
@@ -20,12 +24,19 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).send(err);
 });
 
-if (process.env.MODE === "development") {
+if (configs.mode === "development") {
   app.use(morgan("combined"));
 }
 
-const customHost = process.env.HOST || "localhost";
-const customPort = process.env.PORT || 3000;
+// Process middlewares
+DBMiddleware();
+JwtMiddleware(app);
+ExpressMiddleware(app);
+ApiMiddleware(app);
+
+// Host Express server
+const customHost = configs.host || "localhost";
+const customPort = configs.port || 3000;
 
 app.listen(customPort, (err) => {
   if (err) {
