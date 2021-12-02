@@ -4,6 +4,7 @@
   "description": "Restful apis for Catemoon ecosystem",
   "main": "src/index.js",
   "dependencies": {
+    "axios": "^0.24.0",
     "chalk": "^4.1.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
@@ -12,7 +13,8 @@
     "ip": "^1.1.5",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.14",
-    "prettier": "^2.5.0"
+    "prettier": "^2.5.0",
+    "twit": "^2.2.11"
   },
   "devDependencies": {
     "morgan": "^1.10.0",
