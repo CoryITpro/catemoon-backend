@@ -1,9 +1,8 @@
-const { config } = require("dotenv");
 const expressJWT = require("express-jwt");
 const configs = require("../configs");
 
 const jwtMiddleware = expressJWT({
-  secret: config.jwtSecret,
+  secret: configs.jwtSecret,
   algorithms: ["HS256"],
   requestProperty: "jwt",
 });
