@@ -18,37 +18,43 @@ const linkTwitter = (req, res, next) => {
           twitter: req.body.twitter,
         });
 
-        await Twitter.get(
-          "followers/ids",
-          { screen_name: "catemoon" },
-          async (err, data) => {
-            if (err) {
-              logger.error(err);
-
-              res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
-                message:
-                  "There was an error getting user account status from twitter",
-              });
-              next();
-            }
-
+        await Twitter.get("followers/ids", { screen_name: "catemoon" })
+          .then((data) => {
             const followers = data.ids;
-            let screenNames = [];
 
-            for (let i = 0; i < followers.length; i++) {
-              const id = followers[i];
+            await Twitter.get("users/lookup", { user_id: followers })
+              .then((data) => {
+                const screen_names = data;
 
-              await Twitter.get("users/show" + id, (err, data) => {
-                logger.log(data.screen_name);
-                screenNames.push(data.screen_name);
+                screen_names.map((data) => {
+                  logger.log(data);
+                });
+
+                res.json({
+                  message: screen_names,
+                });
+              })
+              .catch((err) => {
+                if (err) {
+                  logger.error(err);
+
+                  res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
+                    message:
+                      "There was an error getting user account status from twitter",
+                  });
+                  next();
+                }
               });
-            }
+          })
+          .catch((err) => {
+            logger.error(err);
 
-            res.json({
-              message: screenNames,
+            res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
+              message:
+                "There was an error getting user account status from twitter",
             });
-          }
-        );
+            next();
+          });
 
         user.save().then((newUser) => {
           res.status(RESPONSE_STATE.OKAY).json({
