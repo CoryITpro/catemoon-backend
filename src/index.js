@@ -30,7 +30,7 @@ if (configs.mode === "development") {
 
 // Process middlewares
 DBMiddleware();
-JwtMiddleware(app);
+// JwtMiddleware(app);
 ExpressMiddleware(app);
 ApiMiddleware(app);
 
