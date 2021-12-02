@@ -26,14 +26,16 @@ const linkTwitter = (req, res, next) => {
               .then((data) => {
                 const screen_names = data;
 
-                screen_names.map((data) => {
-                  logger.log(data);
-                });
-
-                res.json({
-                  message: screen_names,
-                });
-                next();
+                if (screen_names.includes("verifed")) {
+                  user.save().then((newUser) => {
+                    res.status(RESPONSE_STATE.OKAY).json({
+                      message: `Your address has been successfuly verified with ${newUser.twitter}`,
+                    });
+                    next();
+                  });
+                } else {
+                  next();
+                }
               })
               .catch((err) => {
                 if (err) {
@@ -56,13 +58,6 @@ const linkTwitter = (req, res, next) => {
             });
             next();
           });
-
-        user.save().then((newUser) => {
-          res.status(RESPONSE_STATE.OKAY).json({
-            message: `Your address has been successfuly verified with ${newUser.twitter}`,
-          });
-          next();
-        });
       }
 
       // Check if there is twitter handler
