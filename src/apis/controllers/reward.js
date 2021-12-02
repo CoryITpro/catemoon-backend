@@ -19,7 +19,7 @@ const linkTwitter = (req, res, next) => {
         });
 
         await Twitter.get("followers/ids", { screen_name: "catemoon" })
-          .then((data) => {
+          .then(async (data) => {
             const followers = data.ids;
 
             await Twitter.get("users/lookup", { user_id: followers })
