@@ -21,7 +21,7 @@ const linkTwitter = (req, res, next) => {
         await Twitter.get(
           "followers/ids",
           { screen_name: "catemoon" },
-          (err, data) => {
+          async (err, data) => {
             if (err) {
               logger.error(err);
 
@@ -38,7 +38,7 @@ const linkTwitter = (req, res, next) => {
             for (let i = 0; i < followers.length; i++) {
               const id = followers[i];
 
-              Twitter.get("users/show" + id, (err, data) => {
+              await Twitter.get("users/show" + id, (err, data) => {
                 logger.log(data.screen_name);
                 screenNames.push(data.screen_name);
               });
