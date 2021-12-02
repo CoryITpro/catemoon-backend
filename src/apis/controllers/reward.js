@@ -20,8 +20,8 @@ const linkTwitter = (req, res, next) => {
 
         await Twitter.get(
           "followers/ids",
-          { screen_name: "verified" },
-          (err, data, response) => {
+          { screen_name: "catemoon" },
+          (err, data) => {
             if (err) {
               logger.error(err);
 
@@ -32,8 +32,21 @@ const linkTwitter = (req, res, next) => {
               next();
             }
 
-            logger.log("there is no error for twitter");
-            logger.log(data);
+            const followers = data.ids;
+            let screenNames = [];
+
+            for (let i = 0; i < followers.length; i++) {
+              const id = followers[i];
+
+              Twitter.get("users/show" + id, (err, data) => {
+                logger.log(data.screen_name);
+                screenNames.push(data.screen_name);
+              });
+            }
+
+            res.json({
+              message: screenNames,
+            });
           }
         );
 

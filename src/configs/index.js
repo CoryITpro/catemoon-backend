@@ -14,7 +14,7 @@ module.exports = {
   port: process.env.PORT || "3000",
   // Development Environments
   mongoURL:
-    process.env.MONGL_URL ||
+    process.env.MONGO_URL ||
     "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false",
   jwtSecret: process.env.JWT_SECRET || "$ecret",
   jwtExpires: process.env.JWT_EXPIRES || "30d",
