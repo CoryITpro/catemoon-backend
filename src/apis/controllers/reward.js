@@ -33,6 +33,7 @@ const linkTwitter = (req, res, next) => {
                 res.json({
                   message: screen_names,
                 });
+                next();
               })
               .catch((err) => {
                 if (err) {
