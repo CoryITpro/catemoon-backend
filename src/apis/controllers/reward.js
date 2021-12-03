@@ -13,6 +13,7 @@ const linkTwitter = (req, res, next) => {
     .then(async (user) => {
       // If there isn't an user with given wallet address
       if (!user) {
+        // Make default user record
         const user = new User({
           walletId: req.body.walletId,
           twitter: req.body.twitter,
@@ -21,6 +22,10 @@ const linkTwitter = (req, res, next) => {
         await Twitter.get("followers/ids", { screen_name: req.body.twitter })
           .then(({ data }) => {
             const followers = data.ids;
+
+            res.json({
+              message: followers,
+            });
 
             logger.log(
               `Holder counts of @${req.body.twitter}:`,
@@ -59,6 +64,8 @@ const linkTwitter = (req, res, next) => {
                   logger.log(data.screen_name);
 
                   if (screen_names.includes("verifed")) {
+                    user.verified = true;
+
                     user.save().then((newUser) => {
                       res.status(RESPONSE_STATE.OKAY).json({
                         message: `Your address has been successfuly verified with ${newUser.twitter}`,
