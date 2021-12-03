@@ -104,7 +104,6 @@ const linkTwitter = (req, res, next) => {
               });
               next();
             });
-            next();
           })
           .catch((err) => {
             logger.error(err);
