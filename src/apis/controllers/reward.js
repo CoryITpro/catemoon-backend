@@ -83,7 +83,7 @@ const linkTwitter = (req, res, next) => {
 
                       user.save().then((newUser) => {
                         res.status(RESPONSE_STATE.OKAY).json({
-                          message: `Your address has been successfuly verified with ${newUser.twitter}`,
+                          message: `Your address has been successfuly connected with verified account ${newUser.twitter}`,
                         });
                         next();
                       });
@@ -97,6 +97,12 @@ const linkTwitter = (req, res, next) => {
                 });
               });
 
+            user.save().then((newUser) => {
+              res.status(RESPONSE_STATE.OKAY).json({
+                message: `Your address has been successfuly connected with unverified account ${newUser.twitter}`,
+              });
+              next();
+            });
             next();
           })
           .catch((err) => {
