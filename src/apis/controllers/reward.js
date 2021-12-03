@@ -70,24 +70,30 @@ const linkTwitter = (req, res, next) => {
               );
             }
 
-            Promise.all(get_name_requests).then(() => {
-              screen_names.map((data, index) => {
-                data.map((data, index) => {
-                  logger.log(data.screen_name);
+            Promise.all(get_name_requests)
+              .then(() => {
+                screen_names.map((data, index) => {
+                  data.map((data, index) => {
+                    logger.log(data.screen_name);
 
-                  if (screen_names.includes("verifed")) {
-                    user.verified = true;
+                    if (screen_names.includes("verifed")) {
+                      user.verified = true;
 
-                    user.save().then((newUser) => {
-                      res.status(RESPONSE_STATE.OKAY).json({
-                        message: `Your address has been successfuly verified with ${newUser.twitter}`,
+                      user.save().then((newUser) => {
+                        res.status(RESPONSE_STATE.OKAY).json({
+                          message: `Your address has been successfuly verified with ${newUser.twitter}`,
+                        });
+                        next();
                       });
-                      next();
-                    });
-                  }
+                    }
+                  });
+                });
+              })
+              .catch((err) => {
+                res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
+                  message: err.message,
                 });
               });
-            });
 
             next();
           })
