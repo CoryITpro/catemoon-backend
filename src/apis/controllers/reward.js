@@ -5,6 +5,23 @@ const logger = require("../../utils/logger");
 
 const RESPONSE_STATE = require("../../constants/responseState");
 
+const getUserInfo = (screen_names, id_list) =>
+  Twitter.get("users/lookup", { user_id: id_list })
+    .then((data) => {
+      screen_names.push(data);
+    })
+    .catch((err) => {
+      if (err) {
+        logger.error(err);
+
+        res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
+          message:
+            "There was an error getting user account screen name from twitter",
+        });
+        next();
+      }
+    });
+
 const linkTwitter = (req, res, next) => {
   // Try to find if there is valid user with req.body.walletId
   User.findOne({ walletId: req.body.walletId })
@@ -92,23 +109,6 @@ const linkTwitter = (req, res, next) => {
       next();
     });
 };
-
-const getUserInfo = (screen_names, id_list) =>
-  Twitter.get("users/lookup", { user_id: id_list })
-    .then((data) => {
-      screen_names.push(data);
-    })
-    .catch((err) => {
-      if (err) {
-        logger.error(err);
-
-        res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
-          message:
-            "There was an error getting user account screen name from twitter",
-        });
-        next();
-      }
-    });
 
 module.exports = {
   linkTwitter,
