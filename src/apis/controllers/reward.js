@@ -74,7 +74,7 @@ const linkTwitter = (req, res, next) => {
               .then(() => {
                 screen_names.map((data, index) => {
                   data.map((data, index) => {
-                    logger.log("follower", data.screen_name);
+                    logger.log(`follower: ${data.screen_name}`);
 
                     if (data.screen_name === "verifed") {
                       user.verified = true;
