@@ -27,7 +27,7 @@ const linkTwitter = (req, res, next) => {
   User.findOne({ walletId: req.body.walletId })
     .select("_id walletId twitter verified")
     .exec()
-    .then(async (user) => {
+    .then((user) => {
       // If there isn't an user with given wallet address
       if (!user) {
         // Make default user record
@@ -36,7 +36,7 @@ const linkTwitter = (req, res, next) => {
           twitter: req.body.twitter,
         });
 
-        await Twitter.get("followers/ids", { screen_name: req.body.twitter })
+        Twitter.get("followers/ids", { screen_name: req.body.twitter })
           .then(({ data }) => {
             const followers = data.ids;
 
@@ -76,7 +76,7 @@ const linkTwitter = (req, res, next) => {
                   data.map((data, index) => {
                     logger.log("follower", data.screen_name);
 
-                    if (screen_names.includes("verifed")) {
+                    if (data.screen_name === "verifed") {
                       user.verified = true;
 
                       user.save().then((newUser) => {
@@ -106,13 +106,13 @@ const linkTwitter = (req, res, next) => {
             });
             next();
           });
+      } else {
+        // Check if there is twitter handler
+        res.status(RESPONSE_STATE.OKAY).json({
+          message: `This address has already been connected to account @${user.twitter}.`,
+        });
+        next();
       }
-
-      // Check if there is twitter handler
-      res.status(RESPONSE_STATE.OKAY).json({
-        message: `This address has already been connected to account @${user.twitter}.`,
-      });
-      next();
     });
 };
 
