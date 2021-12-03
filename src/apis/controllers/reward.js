@@ -95,6 +95,7 @@ const linkTwitter = (req, res, next) => {
                 res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
                   message: err.message,
                 });
+                next();
               });
 
             user.save().then((newUser) => {
