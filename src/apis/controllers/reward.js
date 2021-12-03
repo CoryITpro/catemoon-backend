@@ -7,12 +7,12 @@ const RESPONSE_STATE = require("../../constants/responseState");
 
 const getUserInfo = (screen_names, id_list) =>
   Twitter.get("users/lookup", { user_id: id_list })
-    .then((data) => {
+    .then(({ data }) => {
       screen_names.push(data);
     })
     .catch((err) => {
       if (err) {
-        logger.error(err);
+        logger.error(err.message);
 
         res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
           message:
@@ -74,7 +74,7 @@ const linkTwitter = (req, res, next) => {
               .then(() => {
                 screen_names.map((data, index) => {
                   data.map((data, index) => {
-                    logger.log(data.screen_name);
+                    logger.log("follower", data.screen_name);
 
                     if (screen_names.includes("verifed")) {
                       user.verified = true;
