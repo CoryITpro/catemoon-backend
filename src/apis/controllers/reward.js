@@ -18,36 +18,59 @@ const linkTwitter = (req, res, next) => {
           twitter: req.body.twitter,
         });
 
-        await Twitter.get("followers/ids", { screen_name: "catemoon" })
-          .then(async (data) => {
+        await Twitter.get("followers/ids", { screen_name: req.body.twitter })
+          .then(({ data }) => {
             const followers = data.ids;
 
-            await Twitter.get("users/lookup", { user_id: followers })
-              .then((data) => {
-                const screen_names = data;
+            logger.log(
+              `Holder counts of @${req.body.twitter}:`,
+              followers.length
+            );
 
-                if (screen_names.includes("verifed")) {
-                  user.save().then((newUser) => {
-                    res.status(RESPONSE_STATE.OKAY).json({
-                      message: `Your address has been successfuly verified with ${newUser.twitter}`,
+            const requestNumber = Math.floor(followers.length / 100);
+            const remains = followers.length % 100;
+
+            let screen_names = [];
+            let get_name_requests = [];
+
+            for (let i = 0; i < requestNumber; i++) {
+              get_name_requests.push(
+                getUserInfo(
+                  screen_names,
+                  followers.slice(i * 100, i * 100 + 100).join(",")
+                )
+              );
+            }
+
+            if (remains !== 0) {
+              get_name_requests.push(
+                getUserInfo(
+                  screen_names,
+                  followers
+                    .slice(requestNumber * 100, requestNumber * 100 + 100)
+                    .join(",")
+                )
+              );
+            }
+
+            Promise.all(get_name_requests).then(() => {
+              screen_names.map((data, index) => {
+                data.map((data, index) => {
+                  logger.log(data.screen_name);
+
+                  if (screen_names.includes("verifed")) {
+                    user.save().then((newUser) => {
+                      res.status(RESPONSE_STATE.OKAY).json({
+                        message: `Your address has been successfuly verified with ${newUser.twitter}`,
+                      });
+                      next();
                     });
-                    next();
-                  });
-                } else {
-                  next();
-                }
-              })
-              .catch((err) => {
-                if (err) {
-                  logger.error(err);
-
-                  res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
-                    message:
-                      "There was an error getting user account status from twitter",
-                  });
-                  next();
-                }
+                  }
+                });
               });
+            });
+
+            next();
           })
           .catch((err) => {
             logger.error(err);
@@ -67,6 +90,23 @@ const linkTwitter = (req, res, next) => {
       next();
     });
 };
+
+const getUserInfo = (screen_names, id_list) =>
+  Twitter.get("users/lookup", { user_id: id_list })
+    .then((data) => {
+      screen_names.push(data);
+    })
+    .catch((err) => {
+      if (err) {
+        logger.error(err);
+
+        res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
+          message:
+            "There was an error getting user account screen name from twitter",
+        });
+        next();
+      }
+    });
 
 module.exports = {
   linkTwitter,
