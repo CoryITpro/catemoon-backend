@@ -23,13 +23,8 @@ const linkTwitter = (req, res, next) => {
           .then(({ data }) => {
             const followers = data.ids;
 
-            res.json({
-              message: followers,
-            });
-
             logger.log(
-              `Holder counts of @${req.body.twitter}:`,
-              followers.length
+              `Holder counts of @${req.body.twitter}: ${followers.length}`
             );
 
             const requestNumber = Math.floor(followers.length / 100);
