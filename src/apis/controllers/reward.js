@@ -19,7 +19,7 @@ const linkTwitter = (req, res, next) => {
           twitter: req.body.twitter,
         });
 
-        Twitter.get(`/2/users/:${req.body.walletId}`)
+        Twitter.get("/users/lookup", { screen_name: req.body.twitter })
           .then(({ data }) => {
             res.json({
               message: data,
@@ -31,6 +31,19 @@ const linkTwitter = (req, res, next) => {
             });
             next();
           });
+
+        user
+          .save()
+          .then((newUser) => {
+            res.status(RESPONSE_STATE.OKAY).json({
+              message: `Your address has been successfully connected to verified twitter account ${newUser.twitter}`,
+            });
+          })
+          .catch((err) => {
+            res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
+              message: err.message,
+            });
+          });
       }
       // If there is such user with given address and twitter screen name
       else {
@@ -38,7 +51,6 @@ const linkTwitter = (req, res, next) => {
         res.status(RESPONSE_STATE.OKAY).json({
           message: `This address has already been connected to account @${user.twitter}.`,
         });
-        next();
       }
     });
 };
