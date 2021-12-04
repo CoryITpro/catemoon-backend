@@ -21,30 +21,25 @@ const linkTwitter = (req, res, next) => {
 
         Twitter.get("/users/lookup", { screen_name: req.body.twitter })
           .then(({ data }) => {
+            // Twitter account details
             const account_info = data[0];
 
-            if (account_info.id !== 0) {
-              user
-                .save()
-                .then((newUser) => {
-                  res.status(RESPONSE_STATE.OKAY).json({
-                    message: `Your address has been successfully connected to twitter account ${newUser.twitter}`,
-                  });
-                })
-                .catch((err) => {
-                  res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
-                    message: err.message,
-                  });
+            user
+              .save()
+              .then((newUser) => {
+                res.status(RESPONSE_STATE.OKAY).json({
+                  message: `Your address has been successfully connected to twitter account ${newUser.twitter}`,
                 });
-            } else {
-              res.status(RESPONSE_STATE.FORBIDDEN).json({
-                message: `Your account ${req.body.twitter} is not valid account`,
+              })
+              .catch((err) => {
+                res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
+                  message: err.message,
+                });
               });
-            }
           })
           .catch((err) => {
             res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
-              message: `There was an error while getting twitter account status ${err.stack}`,
+              message: `There was an error while getting twitter account status ${err.message}`,
             });
             next();
           });
