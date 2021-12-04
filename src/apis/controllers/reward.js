@@ -21,6 +21,7 @@ const linkTwitter = (req, res, next) => {
 
         Twitter.get("/users/lookup", { screen_name: req.body.twitter })
           .then(({ data }) => {
+            logger.log(JSON.stringify(data));
             res.json({
               message: data,
             });
