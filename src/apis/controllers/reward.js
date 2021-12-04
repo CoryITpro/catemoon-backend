@@ -39,7 +39,7 @@ const linkTwitter = (req, res, next) => {
           })
           .catch((err) => {
             res.status(RESPONSE_STATE.INTERNAL_ERROR).json({
-              message: `There was an error while getting twitter account status ${err.message}`,
+              message: err.message,
             });
             next();
           });
