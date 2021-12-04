@@ -23,12 +23,12 @@ const linkTwitter = (req, res, next) => {
           .then(({ data }) => {
             const account_info = data[0];
 
-            if (account_info.verified === true) {
+            if (account_info.id !== 0) {
               user
                 .save()
                 .then((newUser) => {
                   res.status(RESPONSE_STATE.OKAY).json({
-                    message: `Your address has been successfully connected to verified twitter account ${newUser.twitter}`,
+                    message: `Your address has been successfully connected to twitter account ${newUser.twitter}`,
                   });
                 })
                 .catch((err) => {
@@ -38,7 +38,7 @@ const linkTwitter = (req, res, next) => {
                 });
             } else {
               res.status(RESPONSE_STATE.FORBIDDEN).json({
-                message: `Your account ${req.body.twitter} is not verified account`,
+                message: `Your account ${req.body.twitter} is not valid account`,
               });
             }
           })
