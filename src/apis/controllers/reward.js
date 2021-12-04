@@ -24,6 +24,10 @@ const linkTwitter = (req, res, next) => {
             // Twitter account details
             const account_info = data[0];
 
+            if (account_info.verified === true) {
+              user.validated = true;
+            }
+
             user
               .save()
               .then((newUser) => {
