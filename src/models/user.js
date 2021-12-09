@@ -16,6 +16,8 @@ const userSchema = new Schema({
     trim: true,
   },
   validated: { type: Boolean, required: true, default: false },
+  credits: { type: Number, required: true, default: 0 },
+  dailyPoints: { type: Number, required: true, default: 0 },
 });
 
 module.exports = mongoose.model("users", userSchema);
