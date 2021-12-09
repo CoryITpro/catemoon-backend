@@ -11,6 +11,7 @@ const linkTwitter = (req, res, next) => {
     .select("_id walletId twitter")
     .exec()
     .then((user) => {
+      console.log(req.body);
       // If there isn't an user with given wallet address
       if (!user) {
         // Make default user record
